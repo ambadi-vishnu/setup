@@ -15,9 +15,9 @@ cd ~/temp || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Changing D
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Switched To Temp Directory" >> ~/install-log.txt
 
 #Clone Dotfiles Repository
-echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Cloning mady-codes/dotfiles.git..." >> ~/install-log.txt
-git clone https://github.com/mady-codes/dotfiles.git || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Cloning mady-codes/dotfiles.git" >> ~/install-log.txt; exit 1; }
-echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Cloning Complete - mady-codes/dotfiles.git" >> ~/install-log.txt
+echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Cloning ambadi-vishnu/dotfiles.git..." >> ~/install-log.txt
+git clone https://github.com/ambadi-vishnu/dotfiles.git || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Cloning ambadi-vishnu/dotfiles.git" >> ~/install-log.txt; exit 1; }
+echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Cloning Complete - ambadi-vishnu/dotfiles.git" >> ~/install-log.txt
 
 #Change Directory - Home
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Switching To Home Directory..." >> ~/install-log.txt
