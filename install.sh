@@ -26,90 +26,90 @@ echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Switched To Home Directory" >>
 
 #Script Permission Update
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Updating Script Permissions..." >> ~/install-log.txt
-chmod +x ~/temp/dotfiles/custom/script/* || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Updating Script Permissions" >> ~/install-log.txt; exit 1; }
+chmod +x ~/temp/dotfiles/custom/scripts/* || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Updating Script Permissions" >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Script Permissions Updated" >> ~/install-log.txt
 
 #Executing Script
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Message: Starting Installation Script Execution..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Action: Executing Script ****..." >> ~/install-log.txt
-~/temp/dotfiles/custom/script/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
+~/temp/dotfiles/custom/scripts/*****.sh || { echo "$(date '+%A %d %B %Y | %I:%M %p'): Error: Failed Executing Script ****..." >> ~/install-log.txt; exit 1; }
 echo "$(date '+%A %d %B %Y | %I:%M %p'): Success: Executed Script ****..." >> ~/install-log.txt
 
 #Change Shell - ZSH
