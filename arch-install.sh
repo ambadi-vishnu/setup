@@ -205,12 +205,8 @@ systemctl enable NetworkManager
 echo "-----------------------------"
 echo "  Configuring PipeWire       "
 echo "-----------------------------"
-echo "PipeWire and its related packages have been installed."
-echo "By default, PipeWire is configured with its default settings."
-echo "To enable PipeWire’s user services, after logging in as $USERNAME_INPUT, run:"
-echo "    systemctl --user enable pipewire pipewire-pulse wireplumber"
-echo "and then"
-echo "    systemctl --user start pipewire pipewire-pulse wireplumber"
+systemclt enable pipewire pipewire-pulse wireplumber
+echo "PipeWire and its related packages have been installed and configured."
 
 echo "-----------------------------"
 echo "  Installing GRUB Bootloader (UEFI)  "
