@@ -1,246 +1,210 @@
 #!/bin/bash
-set -e
 
 ###############################################################################
-# Arch Linux UEFI GPT Installation Script with User Creation and Prompts      #
-# and PipeWire Installation/Configuration                                     #
+#                      Arch Linux Installation Script                         #
 #                                                                             #
 # Target Disk   : /dev/nvme0n1 (1TB)                                          #
-# Partitioning  :                                                             #
-#   1. EFI      : 2GB (FAT32, ESP flag)                                       #
-#   2. Root     : 48GB (ext4 for system)                                      #
-#   3. Home     : 50GB (ext4 for /home)                                       #
-#   4. Shared   : 700GB (NTFS, label "Shared")                                #
+# Partitioning  : 100 GiB (Allocated For Arch)                                #
+#   1. EFI      : 2GiB (FAT32, ESP flag)                                      #
+#   2. Root     : 98GiB (ext4 for system)                                     #
 #                                                                             #
-# Minimal install:                                                            #
-#   Packages: base, linux, linux-firmware, intel-ucode, git, nano,            #
-#             networkmanager, ntfs-3g,                                        #
-#             pipewire, pipewire-alsa, pipewire-pulse, pipewire-jack,         #
-#             wireplumber                                                     #
+# Minimal Install:                                                            #
+# Base System Packages: base, linux, linux-firmware                           #
+# Microcode      : intel-ucode                                                #
+# Audio/Multimedia: pipewire, pipewire-alsa, pipewire-jack, pipewire-pulse,   #
+#                   gst-plugin-pipewire, wireplumber, and libpulse            #
+# Development/Utilities: base-devel, networkmanager, git, nano, sudo          #
 #                                                                             #
-# Locale      : en_US.UTF-8                                                   #
+# Locale      : en_IN.UTF-8                                                   #
 # Timezone    : Asia/Kolkata (India) with NTP enabled                         #
-# Repositories: [core], [extra], [multilib] enabled; [testing] disabled       #
+# Keymap      : US                                                            #
+# Repositories: [core], [extra], [multilib] Enabled; [testing] Disabled       #
 #                                                                             #
-# Instead of enabling the root account, you will create a user with root      #
-# privileges.                                                                 #
+# Boot Loader : GRUB                                                          #
+#                                                                             #
+# Root Account Disabled. New User With Root Privileges Will Be Created.       #
 ###############################################################################
 
-# Define disk and partition sizes:
-DISK="/dev/nvme0n1"
-EFI_SIZE="2GiB"
-ROOT_START="2GiB"
-ROOT_END="50GiB"       # Root uses 48GiB (from 2GiB to 50GiB)
-HOME_START="50GiB"
-HOME_END="100GiB"      # Home uses 50GiB (from 50GiB to 100GiB)
-SHARED_START="100GiB"
-SHARED_END="800GiB"    # Shared partition uses 700GiB
+# Exit immediately if a command returns a non-zero exit status, 
+# treat unset variables as errors, and catch errors in pipelines.
+set -euo pipefail
 
-# Partition device names (for NVMe devices, partitions use the 'p' separator):
-EFI_PART="${DISK}p1"
-ROOT_PART="${DISK}p2"
-HOME_PART="${DISK}p3"
-SHARED_PART="${DISK}p4"
+# Log file to capture output and errors.
+LOG="/root/arch_install.log"
+exec > >(tee -a "$LOG") 2>&1
 
-echo "============================================"
-echo "  Starting Arch Linux Installation Process  "
-echo "  Target Disk: ${DISK}"
-echo "============================================"
-sleep 2
+# Unified error reporting.
+function error_exit {
+  echo "[ERROR] $1"
+  exit 1
+}
+
+# Trap errors and display the line number of the unexpected error.
+trap 'error_exit "An unexpected error occurred on line $LINENO. Please check ${LOG}."' ERR
+
+# Ensure the script is running as root.
+if [[ $EUID -ne 0 ]]; then
+  error_exit "This script must be run as root."
+fi
+
+###############################
+# User Input for Customization #
+###############################
+
+echo "======================================"
+echo "    Arch Linux Automated Installer    "
+echo "======================================"
+read -rp "Enter Hostname: " HOSTNAME
+read -rp "Enter UserName: " USERNAME
+echo "Enter Password For User ${USERNAME}: "
+read -rs PASSWORD
+echo
+echo "[INFO] Hostname Set: ${HOSTNAME}"
+echo "[INFO] Username Set: ${USERNAME}"
+
+###############################
+# Variables & Partition Setup #
+###############################
+# Target drive and partition scheme.
+DRIVE="/dev/nvme0n1"
+EFI_SIZE="2GiB"         # EFI partition.
+INSTALL_END="100GiB"       # Total allocated installation space (EFI + root).
+
+# Define partition names.
+EFI_PARTITION="${DRIVE}p1"
+ROOT_PARTITION="${DRIVE}p2"
+MOUNT_POINT="/mnt"
+
+# Confirm target drive exists.
+if [ ! -b "$DRIVE" ]; then
+  error_exit "Drive $DRIVE does not exist."
+fi
 
 ####################################################
-# 1. Wipe Existing Disk Data (THIS WILL ERASE ALL!) #
+# Wipe Existing Disk Data (THIS WILL ERASE ALL!)   #
 ####################################################
-echo "[1/9] WARNING: This will completely wipe all data on ${DISK}!"
-sleep 2
-echo "Wiping existing partition tables and signatures on ${DISK}..."
-sgdisk --zap-all "${DISK}"
-wipefs -a "${DISK}"
+echo "Wiping existing partition tables and signatures on ${DRIVE}..."
+sgdisk --zap-all "${DRIVE}" || error_exit "Failed wiping existing partitions on $DRIVE."
+wipefs -a "${DRIVE}" || error_exit "Failed wiping existing file system on $DRIVE."
 echo "Disk wipe complete."
-sleep 2
 
-##############################
-# 2. Partitioning the Disk   #
-##############################
-echo "[2/9] Creating a new GPT partition table on ${DISK}..."
-parted --script "${DISK}" mklabel gpt
+#################################
+# Partitioning Using parted     #
+#################################
+echo "[INFO] Partitioning drive $DRIVE with GPT."
 
-echo "Creating EFI partition (${EFI_SIZE})..."
-parted --script "${DISK}" \
-  mkpart primary fat32 1MiB ${EFI_SIZE} \
-  set 1 esp on
+# Create a new GPT partition table.
+parted -s "$DRIVE" mklabel gpt || error_exit "Failed to create GPT partition table on $DRIVE."
 
-echo "Creating Root partition (from ${ROOT_START} to ${ROOT_END})..."
-parted --script "${DISK}" \
-  mkpart primary ext4 ${ROOT_START} ${ROOT_END}
+# Create the EFI partition from 1MiB to EFI_SIZE (2GiB).
+parted -s "$DRIVE" mkpart ESP fat32 1MiB ${EFI_SIZE} || error_exit "Failed to create EFI partition."
+# Set the EFI system flag.
+parted -s "$DRIVE" set 1 esp on || error_exit "Failed to set EFI boot flag."
 
-echo "Creating Home partition (from ${HOME_START} to ${HOME_END})..."
-parted --script "${DISK}" \
-  mkpart primary ext4 ${HOME_START} ${HOME_END}
+# Create root partition from EFI_SIZE to INSTALL_END (2GiB to 100GB).
+parted -s "$DRIVE" mkpart primary ext4 ${EFI_SIZE} ${INSTALL_END} || error_exit "Failed to create root partition."
 
-echo "Creating Shared partition (NTFS, from ${SHARED_START} to ${SHARED_END})..."
-parted --script "${DISK}" \
-  mkpart primary ntfs ${SHARED_START} ${SHARED_END}
+echo "[INFO] Partitioning complete."
 
-echo "Partition table after changes:"
-lsblk "${DISK}"
-sleep 3
+###############################
+# Formatting Partitions       #
+###############################
+echo "[INFO] Formatting partitions."
 
-##############################
-# 3. Formatting Partitions   #
-##############################
-echo "[3/9] Formatting partitions..."
+# Format the EFI partition as FAT32.
+mkfs.fat -F32 "$EFI_PARTITION" || error_exit "Failed to format EFI partition."
 
-echo "Formatting EFI partition (${EFI_PART}) as FAT32..."
-mkfs.fat -F32 "${EFI_PART}"
+# Format the root partition as ext4.
+mkfs.ext4 "$ROOT_PARTITION" || error_exit "Failed to format root partition."
 
-echo "Formatting Root partition (${ROOT_PART}) as ext4..."
-mkfs.ext4 -F -L ArchRoot "${ROOT_PART}"
+echo "[INFO] Partition formatting complete."
 
-echo "Formatting Home partition (${HOME_PART}) as ext4..."
-mkfs.ext4 -F -L ArchHome "${HOME_PART}"
+###############################
+# Mounting Partitions         #
+###############################
+echo "[INFO] Mounting partitions."
 
-echo "Formatting Shared partition (${SHARED_PART}) as NTFS..."
-mkfs.ntfs -f -L Shared "${SHARED_PART}"
+mount "$ROOT_PARTITION" "$MOUNT_POINT" || error_exit "Failed to mount root partition."
+mkdir -p "$MOUNT_POINT/boot"
+mount "$EFI_PARTITION" "$MOUNT_POINT/boot" || error_exit "Failed to mount EFI partition."
 
-##############################
-# 4. Mounting Partitions     #
-##############################
-echo "[4/9] Mounting partitions..."
+echo "[INFO] Partitions mounted."
 
-# Mount root partition:
-mount "${ROOT_PART}" /mnt
+##################################
+# Installing the Base System     #
+##################################
+echo "[INFO] Installing base system and additional packages."
 
-# Create mount points and mount EFI & Home partitions:
-mkdir -p /mnt/boot/efi
-mount "${EFI_PART}" /mnt/boot/efi
+# Install the base system and additional packages.
+pacstrap "$MOUNT_POINT" base linux linux-firmware intel-ucode pipewire networkmanager git nano base-devel sudo pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber || error_exit "Pacstrap installation failed."
 
-mkdir -p /mnt/home
-mount "${HOME_PART}" /mnt/home
+echo "[INFO] Base system installation complete."
 
-# Optionally mount the shared partition:
-mkdir -p /mnt/shared
-mount -t ntfs-3g "${SHARED_PART}" /mnt/shared || echo "Warning: Could not mount shared partition now. You may mount it later."
+# Generate fstab file using UUIDs.
+echo "[INFO] Generating fstab."
+genfstab -U "$MOUNT_POINT" >> "$MOUNT_POINT/etc/fstab" || error_exit "Failed to generate fstab."
 
-##############################
-# 5. Base System Installation#
-##############################
-echo "[5/9] Installing base system and essential packages..."
-pacstrap /mnt base linux linux-firmware intel-ucode git nano networkmanager ntfs-3g \
-         pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+###########################################
+# System Configuration in chroot          #
+###########################################
+echo "[INFO] Entering chroot for system configuration."
 
-##############################
-# 6. Generate fstab          #
-##############################
-echo "[6/9] Generating fstab file..."
-genfstab -U /mnt >> /mnt/etc/fstab
-echo "Generated /mnt/etc/fstab:"
-cat /mnt/etc/fstab
-sleep 2
+arch-chroot "$MOUNT_POINT" /bin/bash <<EOF
+set -euo pipefail
 
-#####################################################
-# 7. Get Hostname, Username, and Password from User #
-#####################################################
-echo "[7/9] Configuration: Please provide additional information."
-read -rp "Enter hostname for the new system: " HOSTNAME_INPUT
-read -rp "Enter username for the primary non-root user (with root privileges): " USERNAME_INPUT
-read -srp "Enter password for the user: " USERPASS_INPUT
-echo ""
-echo "You entered hostname: $HOSTNAME_INPUT and username: $USERNAME_INPUT."
+echo "[CHROOT] Configuring system settings..."
 
-#########################################################################
-# 8. Chroot and Post-install Configuration (with non-root user creation) #
-#########################################################################
-echo "[8/9] Entering arch-chroot to configure the system..."
+# --- Locale Configuration ---
+echo "en_IN.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen || { echo "[CHROOT ERROR] Locale generation failed"; exit 1; }
 
-# Create a temporary chroot configuration script with variable expansion:
-cat <<EOF > /mnt/root/chroot_setup.sh
-#!/bin/bash
-set -e
+# --- Keyboard layout ---
+echo "KEYMAP=us" > /etc/vconsole.conf
 
-echo "-----------------------------"
-echo "  Configuring Timezone & NTP  "
-echo "-----------------------------"
+# --- Timezone and NTP ---
 ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 hwclock --systohc
 timedatectl set-ntp true
 
-echo "-----------------------------"
-echo "  Generating locales        "
-echo "-----------------------------"
-sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
-locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-
-echo "-----------------------------"
-echo "  Setting hostname          "
-echo "-----------------------------"
-echo "$HOSTNAME_INPUT" > /etc/hostname
+# --- Hostname & Hosts ---
+echo "${HOSTNAME}" > /etc/hostname
 cat <<HOSTS_EOF > /etc/hosts
 127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   ${HOSTNAME_INPUT}.localdomain ${HOSTNAME_INPUT}
+127.0.1.1   ${HOSTNAME}.localdomain ${HOSTNAME}
 HOSTS_EOF
 
-echo "-----------------------------"
-echo "  Updating pacman.conf      "
-echo "-----------------------------"
-# Enable [multilib] and ensure [testing] remains disabled.
-sed -i '/^
+# --- Enable the Multilib Repository ---
+# Uncomment the [multilib] section in /etc/pacman.conf.
+sed -i '/\[multilib\]/,/Include/ s/^#//' /etc/pacman.conf
 
-\[multilib\]
+# Update package databases.
+pacman -Syyu --noconfirm || { echo "[CHROOT ERROR] Failed to update package databases"; exit 1; }
 
-/,/^Include/ s/^#//' /etc/pacman.conf
-sed -i '/^
+# --- Create non-root user and configure sudo ---
+useradd -m -G wheel ${USERNAME} || { echo "[CHROOT ERROR] Failed to create user ${USERNAME}"; exit 1; }
+echo "${USERNAME}:${PASSWORD}" | chpasswd || { echo "[CHROOT ERROR] Failed to set password for ${USERNAME}"; exit 1; }
+echo "${USERNAME} ALL=(ALL) ALL" > /etc/sudoers.d/99_${USERNAME}
+chmod 440 /etc/sudoers.d/99_${USERNAME}
 
-\[testing\]
+# --- Enable Services ---
+systemctl enable NetworkManager || { echo "[CHROOT ERROR] Failed to enable NetworkManager"; exit 1; }
+systemctl enable pipewire pipewire-pulse wireplumber || { echo "[CHROOT ERROR] Failed to enable pipewire"; exit 1; }
 
-/,/^Include/ s/^/#/' /etc/pacman.conf
-
-echo "-----------------------------"
-echo "  Enabling NetworkManager   "
-echo "-----------------------------"
-systemctl enable NetworkManager
-
-echo "-----------------------------"
-echo "  Configuring PipeWire       "
-echo "-----------------------------"
-systemclt enable pipewire pipewire-pulse wireplumber
-echo "PipeWire and its related packages have been installed and configured."
-
-echo "-----------------------------"
-echo "  Installing GRUB Bootloader (UEFI)  "
-echo "-----------------------------"
-pacman -S --noconfirm grub efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+# --- Bootloader: Install GRUB for EFI ---
+pacman -S --noconfirm grub efibootmgr || { echo "[CHROOT ERROR] Failed to install GRUB or efibootmgr"; exit 1; }
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB || { echo "[CHROOT ERROR] GRUB installation failed"; exit 1; }
 grub-mkconfig -o /boot/grub/grub.cfg
 
-echo "-----------------------------"
-echo "  Creating primary non-root user "
-echo "-----------------------------"
-useradd -m -G wheel -s /bin/bash "$USERNAME_INPUT"
-echo "$USERNAME_INPUT:$USERPASS_INPUT" | chpasswd
-# Lock the root account to disable direct root logins:
-passwd -l root
-
-echo "-----------------------------"
-echo "  Enabling sudo privileges for wheel group "
-echo "-----------------------------"
-sed -i '/^# %wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers
-
-echo "-----------------------------"
-echo "  Chroot setup complete!    "
-echo "-----------------------------"
+echo "[CHROOT] System configuration complete."
 EOF
 
-chmod +x /mnt/root/chroot_setup.sh
-arch-chroot /mnt /bin/bash /root/chroot_setup.sh
-rm /mnt/root/chroot_setup.sh
+echo "[INFO] Exiting chroot."
 
-echo "============================================"
-echo "   Installation is complete!              "
-echo "   Please unmount and reboot your system.   "
-echo "============================================"
-echo "After exiting the chroot, run:"
-echo "  umount -R /mnt"
-echo "  reboot"
+##############################
+# Unmounting and Finalizing  #
+##############################
+echo "[INFO] Unmounting partitions."
+umount -R "$MOUNT_POINT" || error_exit "Failed to unmount partitions."
+
+echo "[INFO] Arch Linux installation complete. You may now reboot your system."
