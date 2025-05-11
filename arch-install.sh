@@ -12,7 +12,7 @@
 # Base System Packages: base, linux, linux-firmware                           #
 # Microcode      : intel-ucode                                                #
 # Audio/Multimedia: pipewire, pipewire-alsa, pipewire-jack, pipewire-pulse,   #
-#                   gst-plugin-pipewire, wireplumber, and libpulse            #
+# sof-firmware, alsa-utils, gst-plugin-pipewire, wireplumber, and libpulse    #
 # Development/Utilities: base-devel, networkmanager, git, nano, sudo          #
 #                                                                             #
 # Locale      : en_IN.UTF-8                                                   #
@@ -136,7 +136,7 @@ echo "[INFO] Partitions mounted."
 echo "[INFO] Installing base system and additional packages."
 
 # Install the base system and additional packages.
-pacstrap "$MOUNT_POINT" base linux linux-firmware intel-ucode pipewire networkmanager git nano base-devel sudo pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber || error_exit "Pacstrap installation failed."
+pacstrap "$MOUNT_POINT" base linux linux-firmware intel-ucode pipewire networkmanager git nano base-devel sudo pipewire-alsa pipewire-jack pipewire-pulse gst-plugin-pipewire libpulse wireplumber sof-firmware alsa-utils || error_exit "Pacstrap installation failed."
 
 echo "[INFO] Base system installation complete."
 
@@ -189,7 +189,7 @@ chmod 440 /etc/sudoers.d/99_${USERNAME}
 
 # --- Enable Services ---
 systemctl enable NetworkManager || { echo "[CHROOT ERROR] Failed to enable NetworkManager"; exit 1; }
-systemctl enable pipewire pipewire-pulse wireplumber || { echo "[CHROOT ERROR] Failed to enable pipewire"; exit 1; }
+systemctl --user enable pipewire pipewire-pulse wireplumber || { echo "[CHROOT ERROR] Failed to enable pipewire"; exit 1; }
 
 # --- Bootloader: Install GRUB for EFI ---
 pacman -S --noconfirm grub efibootmgr || { echo "[CHROOT ERROR] Failed to install GRUB or efibootmgr"; exit 1; }
